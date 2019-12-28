@@ -1,0 +1,200 @@
+{% extends "mainapp/base.html" %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<div class="chart-container">
+<canvas id="myChart"></canvas>
+</div>
+<div class="chart-container">
+<canvas id="myChartPension"></canvas>
+</div>
+<div class="chart-container">
+<canvas id="myChartTarget"></canvas>
+</div>
+<div class="chart-container">
+<canvas id="myChartRetirement"></canvas>
+</div>
+<div class="chart-container">
+<canvas id="myChartEntertainment"></canvas>
+</div>
+
+
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    ctx.canvas.width =250;
+    ctx.canvas.height =250;
+
+    var data = {
+        datasets:[{
+                  data: {{ json_emr|safe }},
+                  label: 'Pension',
+                  borderColor: 'rgb(255, 99, 132)',
+                  },{
+                  data: {{ json_tar|safe}},
+                  label: 'Target',
+                  backgroundColor:'rgb(54, 162, 235)',
+                  },{
+                  data: {{ json_ret|safe}},
+                  label: 'Retirement',
+                  backgroundColor:'rgb(255, 206, 86)',
+                  },{
+                  data: {{ json_ent|safe}},
+                  label: 'Entertainment',
+                  backgroundColor:'rgb(75, 192, 192)',
+                  }],
+
+                  labels: {{ json_dates|safe }}
+                }
+    var options = {
+            maintainAspectRatio: false,
+            legend:{
+              labels:{
+                fontSize:18
+              }
+            },
+            title:{
+              display: true,
+              text: "Savings",
+              fontSize:20
+            }
+          }
+    
+    var myLineChart = new Chart(ctx,
+  {type:"line",
+  data:data,
+  options: options,
+  });
+    var ctx1 = document.getElementById('myChartPension').getContext('2d');
+    ctx1.canvas.width =250;
+    ctx1.canvas.height =250;
+
+    var data1 = {
+        datasets:[{
+                  data: {{ json_emr|safe }},
+                  label: 'Pension',
+                  borderColor: 'rgb(255, 99, 132)',
+                  backgroundColor: "rgba(255,99,132,0.6)", 
+                  }],          
+                  labels: {{ json_dates|safe }}
+                  }
+    var options1 = {
+            maintainAspectRatio: false,
+            legend:{
+              labels:{
+                fontSize:18
+              }
+            },
+            title:{
+              display: true,
+              text: "Savings",
+              fontSize:20
+            }
+          }
+    
+    var myLineChart = new Chart(ctx1,
+  {type:"line",
+  data:data1,
+  options: options1,
+  });
+
+   var ctx2 = document.getElementById('myChartTarget').getContext('2d');
+    ctx2.canvas.width =250;
+    ctx2.canvas.height =250;
+
+    var data2 = {
+        datasets:[{
+                  data: {{ json_tar|safe}},
+                  label: 'Target'
+                  }],
+          
+                  labels: {{ json_dates|safe }}
+                  }
+    var options2 = {
+            maintainAspectRatio: false,
+            legend:{
+              labels:{
+                fontSize:18
+              }
+            },
+            title:{
+              display: true,
+              text: "Savings",
+              fontSize:20
+            }
+          }
+    
+    var myLineChart = new Chart(ctx2,
+  {type:"line",
+  data:data2,
+  options: options2,
+  });
+
+    var ctx3 = document.getElementById('myChartRetirement').getContext('2d');
+    ctx3.canvas.width =250;
+    ctx3.canvas.height =250;
+
+    var data3 = {
+        datasets:[{
+                  data: {{ json_ret|safe}},
+                  label: 'Retirement'
+                  }],
+          
+                  labels: {{ json_dates|safe }}
+                  }
+    var options3 = {
+            maintainAspectRatio: false,
+            legend:{
+              labels:{
+                fontSize:18
+              }
+            },
+            title:{
+              display: true,
+              text: "Savings",
+              fontSize:20
+            }
+          }
+    
+    var myLineChart = new Chart(ctx3,
+  {type:"line",
+  data:data3,
+  options: options3,
+  });
+  
+var ctx4 = document.getElementById('myChartEntertainment').getContext('2d');
+    ctx4.canvas.width =250;
+    ctx4.canvas.height =250;
+
+    var data4 = {
+        datasets:[{
+                  data: {{ json_ent|safe}},
+                  label: 'Entertainment'
+                  }],
+          
+                  labels: {{ json_dates|safe }}
+                  }
+    var options4 = {
+            maintainAspectRatio: false,
+            legend:{
+              labels:{
+                fontSize:18
+              }
+            },
+            title:{
+              display: true,
+              text: "Savings",
+              fontSize:20
+            }
+          }
+    
+    var myLineChart = new Chart(ctx4,
+  {type:"line",
+  data:data4,
+  options: options4,
+  });
+  
+
+     
+  </script>
+
+{% endblock %}
+

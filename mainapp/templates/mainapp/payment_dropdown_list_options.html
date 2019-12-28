@@ -1,0 +1,4 @@
+<option value="">---------</option>
+{% for payment in payments %}
+<option value="{{ payment.pk }}">{{ payment.payment_name }}</option>
+{% endfor %}

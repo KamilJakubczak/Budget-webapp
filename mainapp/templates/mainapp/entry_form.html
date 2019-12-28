@@ -1,0 +1,72 @@
+{% block content %}
+
+  <h2>Person Form</h2>
+  <h3>{{ categories }}</h3>
+
+  <form method="post" id="entryForm" data-categories-url="{% url 'ajax_load_categories' %}" data-types-url="{% url 'ajax_load_types' %}" data-payments-url="{% url 'ajax_load_payments' %}"novalidate>
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+    </table>
+    <button type="submit">Save</button>
+    <a href="{% url 'view_all' %}">See list</a>
+  </form>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script>
+    $("#id_types").change(function () {
+      var url = $("#entryForm").attr("data-types-url");  // get the url of the `load_cities` view
+      var typeId = $(this).val();  // get the selected country ID from the HTML input
+      console.log(typeId)
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'type': typeId       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_category").html(data); 
+           console.log('data',data) // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+
+    $("#id_types").change(function () {
+      var url = $("#entryForm").attr("data-payments-url");  // get the url of the `load_cities` view
+      var paymentId = $(this).val();  // get the selected country ID from the HTML input
+      console.log(paymentId)
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'payment': paymentId
+          
+               // add the country id to the GET parameters
+        },
+
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_payment").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+
+      });
+
+    });
+
+
+    $("#id_category").change(function () {
+      var url = $("#entryForm").attr("data-categories-url");  // get the url of the `load_cities` view
+      var categoryId = $(this).val();  // get the selected country ID from the HTML input
+      console.log(categoryId)
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'category': categoryId       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_subcategory").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+  </script>
+
+{% endblock %}

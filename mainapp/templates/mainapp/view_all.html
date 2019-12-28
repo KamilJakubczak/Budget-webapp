@@ -1,0 +1,211 @@
+{% extends "mainapp/base.html" %}
+{% load static %}
+{% block content %}
+<script src="{% static 'mainapp/js/view_all.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<style>
+  .chart-container {
+    position: relative;
+    height: 45vh !important;
+    width: 15vw !important;
+    display:block;
+    float:left;
+
+  }
+</style>
+
+<div class="container align-center">
+<h4>Month:<span class="badge badge-secondary">{{ month }}</span></h4>
+
+<div class="btn-group">
+  <button type="button" class="btn btn-danger" id='test-btn'>Year</button>
+  <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"
+    aria-haspopup="true" aria-expanded="false">
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <div class="dropdown-menu">
+    {% for year in years %}
+    {% for month in months %}
+    <a class="dropdown-item" href='{% url "view_month" year=year month=month %}'>{{ year }}-{{ month }}</a>
+    {% endfor %}
+    {% endfor %}
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#">Separated link</a>
+  </div>
+</div>
+<br>
+<br>
+<div class="card-deck mb-3 text-center">
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header">
+        <h4 class="my-0 font-weight-normal">Spendings</h4>
+      </div>
+      <div class="card-body mx-auto">
+        <div class="chart-container mx-auto">
+          <canvas id="myChart"></canvas>
+        </div>
+          <table class="table mx-auto">
+            <tbody>
+           <!--    <tr>
+                <th scope="row">Income:</th>
+                <td>{{ income_sum }}</td>
+              </tr>
+               <tr>
+                <th scope="row">Expenditures:</th>
+                <td>{{ expenditures_sum }}</td>
+              </tr> -->
+               <tr>
+                <th scope="row">Result:</th>
+                <td>{{ result_sum }}</td>
+              </tr>
+            </tbody>
+          </table>
+        
+      </div>
+    </div>
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header">
+        <h4 class="my-0 font-weight-normal">Spendings</h4>
+      </div>
+      <div class="card-body mx-auto">
+        <div class="chart-container">
+          <canvas id="myChart2"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<p>
+  <button type="button" class="btn btn-outline-primary">Account: {{ account_sum }}</button>
+  <button type="button" class="btn btn-outline-info">Cash: {{ cash_sum }}</button>
+  <button type="button" class="btn btn-outline-warning">Savings: {{ savings_sum }}</button>
+  <button type="button" class="btn btn-secondary">Retirement: {{ retirement_sum }}</button>
+  <button type="button" class="btn btn-secondary">Target: {{ target_sum }}</button>
+  <button type="button" class="btn btn-secondary">Entertainment: {{ entertainment_sum }}</button>
+  <button type="button" class="btn btn-secondary">Emergency: {{ emergency_sum }}</button>
+</p>
+
+<table id="myTable" class='table table-hover shadow p-3 mb-5 bg-white rounded mx-auto'>
+  <thead>
+  
+    <tr>
+      <th cope="col">Id</th>
+      <th cope="col">Transaction date</th>
+      <th cope="col">Desc</th>
+      <th cope="col">Type</th>
+      <th cope="col">Category</th>
+      <th cope="col">SubCategory</th>
+      <th cope="col">Amount</th>
+      <th cope="col">Payment</th>
+    </tr>
+      <tr>
+      <th><input class="form-control ds-input" type="search" id="myInput-0" onkeyup="myFunction(0)" placeholder="Id"></th>
+      <th><input class="form-control ds-input" type="search" id="myInput-1" onkeyup="myFunction(1)" placeholder="Id"></th>
+      <th><input class="form-control ds-input" type="search" id="myInput-2" onkeyup="myFunction(2)" placeholder="Id"></th>
+      <th><input class="form-control ds-input" type="search" id="myInput-3" onkeyup="myFunction(3)" placeholder="Id"></th>
+      <th><input class="form-control ds-input" type="search" id="myInput-4" onkeyup="myFunction(4)" placeholder="Id"></th>
+      <th><input class="form-control ds-input" type="search" id="myInput-5" onkeyup="myFunction(5)" placeholder="Id"></th>
+      <th><input class="form-control ds-input" type="search" id="myInput-6" onkeyup="myFunction(6)" placeholder="Id"></th>
+      <th><input class="form-control ds-input" type="search" id="myInput-7" onkeyup="myFunction(7)" placeholder="Id"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for detail in details %}
+    <tr>
+      <td scope="row">{{ detail.id }}</td>
+      <td>{{ detail.transaction_date }}</td>
+      <td>{{ detail.desc }}</td>
+      <td>{{ detail.types }}</td>
+      <td>{{ detail.category }}</td>
+      <td>{{ detail.subcategory }}</td>
+      <td>{{ detail.amount }}</td>
+      <td>{{ detail.payment }} <a href="javascript:{document.getElementById('del_entry{{ detail.id }}').submit()}"><img src="/static/admin/img/icon-deletelink.svg"></a></td>
+      <td><input type="checkbox"></td>
+    </tr>
+
+    <form id="del_entry{{ detail.id }}" method="POST" action="{% url 'del_entry' detail.id %}">
+  {% csrf_token %}
+  <input type="hidden" >
+</form>
+  
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<script>
+  var ctx = document.getElementById('myChart').getContext('2d');
+  ctx.canvas.width = 150
+  ctx.canvas.height = 150;
+
+  var data = {
+    datasets: [{
+      data: {{ json_values| safe }},
+  backgroundColor: [
+    "rgb(147,228,40)",
+    "rgb(255,83,41)",
+  ] 
+        }],
+  labels: {{ json_labels | safe }}
+
+        };
+  var options = {
+    maintainAspectRatio: false,
+    legend: {
+      labels: {
+        fontSize: 18
+      }
+    },
+    title: {
+      display: true,
+      text: "Spendings",
+      fontSize: 20
+    }
+  }
+
+  var myDoughnutChart = new Chart(ctx,
+    {
+      type: "doughnut",
+      data: data,
+      options: options,
+    });
+
+
+  var ctx2 = document.getElementById('myChart2').getContext('2d');
+    ctx2.canvas.width = 150;
+    ctx2.canvas.height = 150;
+
+    var data2 = {
+      datasets: [{
+      data: {{ json_categories_amount | safe }},
+      backgroundColor: [
+        "rgb(147,228,40)",
+        "rgb(255,83,41)",
+      ] 
+        }],
+      labels: {{ json_categories | safe }}
+
+        };
+    var options2 = {
+      maintainAspectRatio: false,
+      legend: {
+        labels: {
+          fontSize: 18
+      }
+    },
+    title: {
+      display: true,
+      text: "Spendings",
+      fontSize: 20
+    }
+  }
+
+  var myBarChart = new Chart(ctx2, {
+    type: 'horizontalBar',
+    data: data2,
+    options: options2
+  });
+  
+
+</script>
+{% endblock %}

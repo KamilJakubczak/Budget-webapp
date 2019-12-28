@@ -1,0 +1,41 @@
+{% block content %}
+
+<a href="{% url 'entry_add' %}">Add</a>
+<p>{{ instance.sum_of_all }}</p>
+  <table>
+    <thead>
+      <tr>
+      <th>Id</th>
+      <th>Transaction date</th>
+      <th>Desc</th>
+      <th>Type</th>
+      <th>Category</th>
+      <th>SubCategory</th>
+      <th>Amount</th>   
+      <th>Payment</th> 
+    </tr>    
+    </thead>
+    <tbody>
+        {% for instance in object_list %}
+      <tr>
+        <td>{{ instance.id }}</td>
+        <td>{{ instance.transaction_date }}</td>
+        <td>{{ instance.desc }}</td>
+        <td>{{ instance.types }}</td>
+        <td>{{ instance.category }}</td>
+        <td>{{ instance.subcategory }}</td>
+        <td>{{ instance.amount }}</td>
+
+      </tr>
+      {% endfor %}
+    </tbody>    
+    
+
+
+  </table>
+  
+
+
+
+
+{% endblock %}

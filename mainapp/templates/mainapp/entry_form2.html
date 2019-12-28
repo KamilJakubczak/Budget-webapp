@@ -1,0 +1,112 @@
+{% extends "mainapp/base.html" %}
+{% block content %}
+
+  <h2>Person Form</h2>
+  <h3>{{ categories }}</h3>
+
+  <form class="shadow p-3 mb-5" action="{% url 'new_entry' %}"  method="post" id="entryForm" data-categories-url="{% url 'ajax_load_categories' %}" data-types-url="{% url 'ajax_load_types' %}" data-payments-url="{% url 'ajax_load_payments' %}"novalidate>
+    {% csrf_token %}
+    
+    <div class="form-group">
+      <label for="id_transaction_date">Transaction date:</label>
+      <input type="date" class="form-control" id="id_transaction_date" name="transaction_date" value="{{ today }}">
+    </div>
+    <div class="form-group">
+      <label for="id_desc">Desc:</label>
+      <input type="text" class="form-control" name="desc" maxlength="100" required id="id_desc" placeholder="Description">
+    </div>
+    <div class="form-group">
+      <label for="id_types">Types:</label>
+      <select name="types" class="form-control" required id="id_types">
+        <option value="" selected>----------</option>
+        <option value="1">Expenditure</option>
+        <option value="2">Income</option>
+        <option value="3">Transfer</option>
+      </select>
+      </div>
+      <div class="form-group">
+        </select>
+          <label for="id_category" >Category:</label>
+          <select name="category" class="form-control" id="id_category">
+          <option value="" selected>---------</option>
+        </select>
+      </div>
+      <div class="form-group">
+        </select>
+          <label for="id_subcategory">Subcategory:</label>
+          <select name="subcategory" class="form-control" id="id_subcategory">
+          <option value="" selected>---------</option>
+        </select>
+      </div> 
+      <div class="form-grup">
+        <label for="id_amount">Amount:</label>
+        <input type="number" class="form-control" name="amount" step="0.01" required id="id_amount">
+      </div> 
+      <div class="form-grup">
+        <label for="id_payment">Payment:</label>
+        <select name="payment" class="form-control" id="id_payment">
+        <option value="" selected>---------</option>
+        </select>
+      </div>
+    <button type="submit" class="btn btn-primary" href="{% url 'add2' %}">Save</button>
+    <a href="{% url 'add2' %}">See list</a>
+  </form>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script>
+    $("#id_types").change(function () {
+      var url = $("#entryForm").attr("data-types-url");  // get the url of the `load_cities` view
+      var typeId = $(this).val();  // get the selected country ID from the HTML input
+      //console.log(typeId)
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'type': typeId       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_category").html(data); 
+          //console.log('data',data) // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+
+    $("#id_types").change(function () {
+      var url = $("#entryForm").attr("data-payments-url");  // get the url of the `load_cities` view
+      var paymentId = $(this).val();  // get the selected country ID from the HTML input
+      console.log(paymentId)
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'payment': paymentId
+          
+               // add the country id to the GET parameters
+        },
+
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_payment").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+
+      });
+
+    });
+
+
+    $("#id_category").change(function () {
+      var url = $("#entryForm").attr("data-categories-url");  // get the url of the `load_cities` view
+      var categoryId = $(this).val();  // get the selected country ID from the HTML input
+      console.log(categoryId)
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'category': categoryId       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#id_subcategory").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    });
+  </script>
+
+{% endblock %}

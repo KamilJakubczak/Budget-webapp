@@ -182,7 +182,7 @@ def full_list(request):
         tempmonths.append(month[0])
     months=tempmonths
 
-    current_month = 11 #datetime.now().month
+    current_month = datetime.now().month
     get_all = Entry.objects.all()
     details = get_all.order_by('-transaction_date')
     monthly_sum = Entry.objects.all()

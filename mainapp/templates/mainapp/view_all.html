@@ -83,12 +83,16 @@
   <button type="button" class="btn btn-secondary">Target: {{ target_sum }}</button>
   <button type="button" class="btn btn-secondary">Entertainment: {{ entertainment_sum }}</button>
   <button type="button" class="btn btn-secondary">Emergency: {{ emergency_sum }}</button>
+  <button type="button" class="btn btn-secondary">Treasury Bonds Retirement: {{ treasury_bonds_ret }}</button>
+
+</p>
+<p>
+  {{ income_sum }} {{ expenditures_sum }}
 </p>
 
-<table id="myTable" class='table table-hover shadow p-3 mb-5 bg-white rounded mx-auto'>
+<table id="myTable" class='table-sm table-hover shadow p-3 mb-5 bg-white rounded mx-auto'>
   <thead>
-  
-    <tr>
+  	<tr>
       <th cope="col">Id</th>
       <th cope="col">Transaction date</th>
       <th cope="col">Desc</th>
@@ -140,7 +144,7 @@
 
   var data = {
     datasets: [{
-      data: {{ json_values| safe }},
+      data: {{ json_percentage| safe }},
   backgroundColor: [
     "rgb(147,228,40)",
     "rgb(255,83,41)",

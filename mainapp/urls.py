@@ -14,5 +14,6 @@ urlpatterns = [
     path('view/<int:year>/<int:month>', views.view_month, name ='view_month'),
     path('savings/', views.savings_graph, name='savings'),
     path('<int:entry_id>/del_entry', views.del_entry, name='del_entry'),
+    path('transactions',views.show_transactions, name='transactions')
 ]
 

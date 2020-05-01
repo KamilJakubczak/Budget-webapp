@@ -1,2 +1,6 @@
 *.sqlite3
 p
+__pycache__
+migrations
+*.swp
+**/__pycache__

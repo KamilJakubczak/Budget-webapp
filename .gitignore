@@ -6,3 +6,5 @@ migrations
 **/__pycache__/**
 *.pyc
 /__pycache__
+config.py
+budget_env

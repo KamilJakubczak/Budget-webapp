@@ -1,0 +1,72 @@
+{% extends "mainapp/base.html" %}
+{% load static %}
+{% block content %}
+
+
+
+
+<table id="myTable" class='table-sm table-hover shadow p-3  mx-2 bg-white rounded mx-auto' data-categories-url="{% url 'ajax_load_categories' %}" data-types-url="{% url 'ajax_load_types' %}" data-payments-url="{% url 'ajax_load_payments' %}">
+  <thead>
+  	<tr>
+      <th cope="col">Date</th>
+      <th cope="col">Description</th>
+      <th cope="col">Account</th>
+      <th cope="col">Category</th>
+      <th cope="col">Amount</th>
+      <th cope="col">Type</th>
+      <th cope="col">Category</th>
+       <th cope="col">Payment</th>
+      <th cope="col">Add?</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for transaction in transactions %}
+
+ 
+    <form method="post" action="{% url 'new_entry' %}" novalidate>	
+    	{% csrf_token %}
+    <tr>
+      <td scope="row"><input name="transaction_date" type="date" class="form-control" value="{{ transaction.date }}"></td>
+      <td scope="row"><input type="text" class="form-control" name="desc" maxlength="100" value="{{ transaction.description }}"></td>
+      <td scope="row">{{ transaction.account }}</td>
+      <td scope="row">{{ transaction.category }}</td>
+      <td scope="row"><input type="number" class="form-control" name="amount" step="0.01" value="{{ transaction.amount }}"></td>
+      <td scope="row">
+	    <select name="types" class="form-control type" required id="id_types_{{ forloop.counter }}">
+	    	<option value="">--------</option>
+	    	<option value="1">Expenditure</option>
+	    	<option value="2">Income</option>
+	    	<option value="3">Transfer</option>
+	    </select>
+	  </td>
+
+
+	  <td>
+          <select name="category" class="form-control" id="id_category_{{ forloop.counter }}">
+          <option value="" selected>---------</option>
+        </select>
+	  </td>
+	    <td scope="row">
+	    	<select name="payment" class="form-control" id="id_payment_{{ forloop.counter }}">>
+        <option value="" selected>---------</option>
+        </select>
+	  </td>
+	  <td>
+	  		<select name="subcategory" class="form-control" id="id_subcategory">
+          <option value="" selected>---------</option>
+        </select>
+
+	  </td>
+	  <td><button type="submit">Save</button></td>
+	</form>
+      <td><input type="checkbox"></td>
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<script type="text/javascript" src="{% static 'mainapp/js/transaction_view.js' %}"></script>
+{% endblock %}

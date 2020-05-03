@@ -27,7 +27,7 @@ class Payment(models.Model):
     payment_name = models.CharField(max_length=30)
 
     def __str__(self):
-        return ( self.payment_name) #self.parent_type_name.type_name + '-' + str(self.id) + '-' + self.payment_name)
+        return ( str(self.id) + self.payment_name) #self.parent_type_name.type_name + '-' + str(self.id) + '-' + self.payment_name)
 
 class Entry(models.Model):
     added_date = models.DateField(auto_now_add=True)

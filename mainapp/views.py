@@ -10,6 +10,8 @@ from .forms import EntryForm
 from django.db.models import Sum
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+
+import read_csv
 mapping = {
     #Transfer 
     'cash_inc': 1,
@@ -26,6 +28,8 @@ mapping = {
     'accToEnt': 12,
     'entToAcc': 13,
     'accToCsh': 14,
+    'retToTB' : 15,
+    'TBToRet' : 16,
     
 
     'income': 2,
@@ -54,8 +58,18 @@ def load_payments(request):
 
 #def month_view()
 def view_month(request,year,month):
+    if month !=12:
+        next_month = f'{year}-{month+1}-01'
+    else:
+        next_month = f'{year+1}-01-01'
+
     yearly_sum = Entry.objects.filter(transaction_date__year__lte=year)
-    to_month_sum = yearly_sum.filter(transaction_date__month__lte=month)
+    to_month_sum = Entry.objects.filter(transaction_date__lte=next_month)
+
+    # to_month_sum = Entry.objects.filter(transaction_date__year__lte=year,
+    #                                 transaction_date__month__lte=month)
+    print(80*'#')
+    print(to_month_sum.order_by('-transaction_date'))
     monthly_sum = yearly_sum.filter(transaction_date__month=month)
     temp_month = month
     years = Entry.objects.values_list('transaction_date__year').distinct()
@@ -85,7 +99,9 @@ def view_month(request,year,month):
     account_sum += payment_result(to_month_sum,'cshToAcc','accToCsh','amount')
     account_sum = round(float(account_sum),2)
 
+    treasury_bonds_ret_sum = payment_result(to_month_sum,'retToTB','TBToRet','amount')
     retirement_sum = payment_result(to_month_sum,'accToRet','retToAcc','amount')
+    retirement_sum += payment_result(to_month_sum,'TBToRet','retToTB','amount')
     emergency_sum = payment_result(to_month_sum,'accToEmr','emrToAcc','amount')
     target_sum = payment_result(to_month_sum,'accToTar','tarToAcc','amount')    
     entertainment_sum = payment_result(to_month_sum,'accToEnt','entToAcc','amount')
@@ -102,19 +118,21 @@ def view_month(request,year,month):
     expenditures_sum = getTypeSum(monthly_sum,mapping['expenditures'])
     result_sum = round(income_sum - expenditures_sum,2)
     income_sum =income_sum
-   
+    chart_percentage =[]
     chart_values =[]
     chart_labels =[]
     chart_values.append(income_sum)
     chart_values.append(expenditures_sum)
     chart_labels.append('income')
     chart_labels.append('expenditures')
-
+    chart_percentage.append(income_sum/(income_sum+expenditures_sum))
+    chart_percentage.append(expenditures_sum/(income_sum+expenditures_sum))
     # for i in chart_values:
     #     print(i)
     categories_amount = get_categories_amount(details,categs)
     # print('beore' + categories_amount)
     json_values = json.dumps(chart_values, cls=DjangoJSONEncoder)
+    json_percentage = json.dumps(chart_percentage,cls=DjangoJSONEncoder)
     json_labels = json.dumps(chart_labels)
     json_categories = json.dumps(categs)
     json_categories_amount = json.dumps(categories_amount,cls=DjangoJSONEncoder)
@@ -131,12 +149,14 @@ def view_month(request,year,month):
             'target_sum': target_sum,
             'entertainment_sum': entertainment_sum,
             'savings_sum': savings_sum,
+            'treasury_bonds_ret': treasury_bonds_ret_sum,
             'years': years,
             'months': months,
             'json_labels': chart_labels,
             'json_values': chart_values,
             'json_categories': json_categories,
             'json_categories_amount': json_categories_amount,
+            'json_percentage':json_percentage,
             }
     return render(request, 'mainapp/view_all.html',contex)
 
@@ -182,7 +202,7 @@ def full_list(request):
         tempmonths.append(month[0])
     months=tempmonths
 
-    current_month = 11 #datetime.now().month
+    current_month = datetime.now().month
     get_all = Entry.objects.all()
     details = get_all.order_by('-transaction_date')
     monthly_sum = Entry.objects.all()
@@ -240,7 +260,7 @@ def add2(request):
 def new_entry(request):
     form = EntryForm(request.POST)
     form.save()
-    return HttpResponseRedirect(reverse('add2'))
+    return HttpResponseRedirect(reverse('transactions'))
 
 def getTypeSum(dataset,transaction_type):
     output = dataset.filter(types=transaction_type).aggregate(Sum('amount'))['amount__sum']
@@ -319,3 +339,11 @@ def del_entry(request,entry_id):
         entry = get_object_or_404(Entry,pk=entry_id)
         entry.delete()
         return redirect('view_all')
+
+def show_transactions(request):
+    transactions = read_csv.TransactionList('/home/noxiss/Downloads/lista_operacji_200201_200229_202003071553459319.csv')
+    transactions_list = transactions.transactions
+    # for transaction in transactions_list:
+    #     print(transaction.account)
+    
+    return render(request,'mainapp/transaction_view.html',{'transactions': transactions_list})

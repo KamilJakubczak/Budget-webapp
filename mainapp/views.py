@@ -111,10 +111,16 @@ def view_month(request,year,month):
     chart_labels =[]
     chart_values.append(income_sum)
     chart_values.append(expenditures_sum)
-    chart_labels.append('income')
+    chart_labels.append('result')
     chart_labels.append('expenditures')
-    chart_percentage.append(income_sum/(income_sum+expenditures_sum))
-    chart_percentage.append(expenditures_sum/(income_sum+expenditures_sum))
+    income_prc = (income_sum-expenditures_sum)/income_sum
+    if(income_prc < 0):
+        income_prc = 0
+    exp_prc = expenditures_sum/(income_sum)
+    if(exp_prc > 1):
+        exp_prc = 1
+    chart_percentage.append(income_prc)
+    chart_percentage.append(exp_prc)
     categories_amount = get_categories_amount(details,categs)
     json_values = json.dumps(chart_values, cls=DjangoJSONEncoder)
     json_percentage = json.dumps(chart_percentage,cls=DjangoJSONEncoder)
